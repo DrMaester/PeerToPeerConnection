@@ -6,7 +6,9 @@ namespace PeerToPeerConnection.Server
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            UDPServer server = new UDPServer(27005);
+            server.Start();
+            Console.ReadKey();
         }
     }
 }
