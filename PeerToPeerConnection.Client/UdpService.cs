@@ -22,6 +22,9 @@ namespace PeerToPeerConnection.Client
             _port = port;
             _serverIPEndpoint = new IPEndPoint(_serverIp, _port);
             _client = new UdpClient();
+            _client.Client.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
+            _client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            _client.AllowNatTraversal(true);
         }
 
         public void SendPaketToPeer()
@@ -37,7 +40,7 @@ namespace PeerToPeerConnection.Client
             var remotePeerEndpoint = new IPEndPoint(IPAddress.Parse(ipaddress), int.Parse(port));
 
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            socket.Bind(remotePeerEndpoint);
+            //socket.Bind(remotePeerEndpoint);
             socket.SendTo(paketBuffer, remotePeerEndpoint);
 
         }
@@ -46,7 +49,8 @@ namespace PeerToPeerConnection.Client
         {
             var paket = new Paket(PaketType.RequestExternalAddress, null);
             var paketBuffer = paket.ToBytes();
-            _client.Send(paketBuffer, paketBuffer.Length);
+            //_client.Send(paketBuffer, paketBuffer.Length);
+            _client.Client.SendTo(paketBuffer, _serverIPEndpoint);
         }
 
         public void Connect()
@@ -63,10 +67,11 @@ namespace PeerToPeerConnection.Client
         {
             try
             {
-                _client.Connect(_serverIPEndpoint);
+                //_client.Connect(_serverIPEndpoint);
                 var connectPaket = new Paket(PaketType.Connect, null);
                 var connectPaketBuffer = connectPaket.ToBytes();
-                _client.Send(connectPaketBuffer, connectPaketBuffer.Length);
+                //_client.Send(connectPaketBuffer, connectPaketBuffer.Length);
+                _client.Client.SendTo(connectPaketBuffer, _serverIPEndpoint);
                 while (true)
                 {
                     var paketBuffer = _client.Receive(ref _serverIPEndpoint);

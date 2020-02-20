@@ -42,6 +42,7 @@ namespace PeerToPeerConnection.Server
                         lock (_clientsLock)
                         {
                             _clients.Add(new ClientData(((IPEndPoint)_localEndPoint)));
+                            Console.WriteLine($"Client connected {_clients.Last().IPEndPoint}");
                         }
                     }
 
